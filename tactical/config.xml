@@ -18,4 +18,5 @@
     <preference name="keepRunning" value="true" />
     <preference name="loadingDialog" value="Loading...,Please wait" />
     <plugin name="cordova-plugin-whitelist" />
+    <icon src="icon.png" />
 </widget>
