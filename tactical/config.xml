@@ -12,10 +12,10 @@
     <preference name="orientation" value="portrait" />
     <preference name="target-device" value="universal" />
     <preference name="fullscreen" value="true" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="EnableWebGL" value="true" />
-    <preference name="ErrorUrl" value="Error/" />
-    <preference name="KeepRunning" value="true" />
-    <preferance name="LoadingDialog" value="Loading...,Please wait" />
+    <preference name="disallowOverscroll" value="true" />
+    <preference name="enableWebGL" value="true" />
+    <preference name="errorUrl" value="Error/" />
+    <preference name="keepRunning" value="true" />
+    <preference name="loadingDialog" value="Loading...,Please wait" />
     <plugin name="cordova-plugin-whitelist" />
 </widget>
