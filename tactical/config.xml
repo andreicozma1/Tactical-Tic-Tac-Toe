@@ -14,7 +14,7 @@
     <preference name="fullscreen" value="true" />
     <preference name="disallowOverscroll" value="true" />
     <preference name="enableWebGL" value="true" />
-    <preference name="errorUrl" value="Error/" />
+    <preference name="errorUrl" value="err_index.html" />
     <preference name="keepRunning" value="true" />
     <preference name="loadingDialog" value="Loading...,Please wait" />
     <plugin name="cordova-plugin-whitelist" />
