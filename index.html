@@ -3,18 +3,37 @@
 <head>
     <title>Tactical</title>
     <style>
-        body,
-        iframe {
-            width: 100vw;
-            height: 100vh;
+        body {
             margin: 0;
             padding: 0;
             overflow: hidden;
         }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {}
     </style>
+
 </head>
 
 <body>
+    <canvas id="canv"></canvas>
+    <script>
+        var c = document.getElementById("canv");
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        var ctx = c.getContext("2d");
+        var my_gradient = ctx.createRadialGradient(c.width / 2, c.height / 2, 0, c.width / 2, c.height / 2, (c.width / c.height > 1) ? c.width : c.height);
+        my_gradient.addColorStop(0, "white");
+        my_gradient.addColorStop(1, "grey");
+        ctx.fillStyle = my_gradient;
+        ctx.fillRect(0, 0, c.width, c.height);
+    </script>
     <iframe src="https://andreig992.github.io/Tactical-Tic-Tac-Toe/game/game.html" frameBorder="0"></iframe>
 </body>
 
