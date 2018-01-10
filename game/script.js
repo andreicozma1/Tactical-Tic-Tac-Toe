@@ -17,6 +17,8 @@ c.width = window.innerWidth; // SETS THE CANVAS WIDTH TO THE INNER WIDTH OF THE 
 c.height = window.innerHeight; // SETS THE CANVAS HEIGHT TO THE INNER HEIGHT OF THE WINDOW
 var ctx = c.getContext("2d"); // THE CONTEXT OF THE CANVAS IS WHAT WE'LL USE TO DRAW SHAPES
 
+var noNetMsg = "No Internet Connection.\nCertain features may be limited.";
+
 var date = new Date();
 var draw = {};
 
@@ -365,6 +367,13 @@ function gameLoop() {
             ticTacToeText.y = 30 + textSize * 2.47;
             ticTacToeText.show();
 
+            if (!navigator.onLine) {
+                var statusText = new Element();
+                statusText.text = "OFFLINE";
+                statusText.size = textSize * .8
+                statusText.y = 30 + textSize * 4.5;
+                statusText.show();
+            }
 
             var newBtn = new Element();
             newBtn.text = "NEW";
@@ -394,7 +403,7 @@ function gameLoop() {
                     lobbySearchInterval = setInterval(searchForLobbies, 1000);
                 }
                 else {
-                    alert("No Internet Connection. Cannot search for online lobbies")
+                    alert(noNetMsg)
                 }
             }
             joinBtn.show();
@@ -545,6 +554,9 @@ function gameLoop() {
                         game.singleplayer = false;
                         game.placeAnywhere = false;
                         game.singleMarker = 0;
+                    }
+                    else {
+                        alert(noNetMsg);
                     }
                 }
                 else {
@@ -1632,7 +1644,7 @@ function startAction() {
         });
     }
     else {
-        alert("No Internet Connection. Switch to Single Player mode")
+        alert(noNetMsg)
     }
 }
 
@@ -1694,35 +1706,40 @@ function searchForLobbies() {
 }
 
 function joinLobby(lobbyNumber) {
+    if (navigator.onLine) {
+        database.main.ref("game/count/" + lobbyNumber).once("value").then(function(snapshot) {
+            var joinedPlayersArr = snapshot.val()[1].filter(n => n);
 
-    database.main.ref("game/count/" + lobbyNumber).once("value").then(function(snapshot) {
-        var joinedPlayersArr = snapshot.val()[1].filter(n => n);
+            if (joinedPlayersArr.length == 1) {
+                console.log("joinLobby: " + lobbyNumber + " has " + joinedPlayersArr[0])
 
-        if (joinedPlayersArr.length == 1) {
-            console.log("joinLobby: " + lobbyNumber + " has " + joinedPlayersArr[0])
+                gameBoard.number = lobbyNumber;
+                if (joinedPlayersArr[0] == "X") {
+                    joinedPlayersArr.push("O");
+                    gameBoard.player = "O";
 
-            gameBoard.number = lobbyNumber;
-            if (joinedPlayersArr[0] == "X") {
-                joinedPlayersArr.push("O");
-                gameBoard.player = "O";
+                }
+                else if (joinedPlayersArr[0] == "O") {
+                    joinedPlayersArr.push("X");
+                    gameBoard.player = "X";
 
+                }
+                console.log("joinLobby: Joining " + lobbyNumber + " as " + gameBoard.player);
+                timers.playingRuntime.original = date.getTime();
+                writeDb(joinedPlayersArr, "game/count/" + gameBoard.number + "/1");
+                switchScreen(game.screens.game);
+                setupSync();
             }
-            else if (joinedPlayersArr[0] == "O") {
-                joinedPlayersArr.push("X");
-                gameBoard.player = "X";
-
+            else {
+                console.log("joinLobby: " + lobbyNumber + " already taken. Searching again..")
+                // TODO JOIN ANOTHER LOBBY OF SAME FRACTALS
             }
-            console.log("joinLobby: Joining " + lobbyNumber + " as " + gameBoard.player);
-            timers.playingRuntime.original = date.getTime();
-            writeDb(joinedPlayersArr, "game/count/" + gameBoard.number + "/1");
-            switchScreen(game.screens.game);
-            setupSync();
-        }
-        else {
-            console.log("joinLobby: " + lobbyNumber + " already taken. Searching again..")
-            // TODO JOIN ANOTHER LOBBY OF SAME FRACTALS
-        }
-    });
+        });
+    }
+    else {
+        alert(noNetMsg);
+    }
+
 }
 
 var timesArrayX = []
@@ -1730,7 +1747,7 @@ var timesArrayO = []
 
 function cleanupDatabase() {
 
-    if (game.currentScreen != game.screens.game) {
+    if (game.currentScreen != game.screens.game && navigator.onLine) {
         database.main.ref("game/count").once("value").then(function(snapshot) {
             var countDb = snapshot.val();
 
