@@ -656,7 +656,6 @@ function gameLoop() {
             break;
         case game.screens.game:
 
-
             ctx.globalAlpha = 1;
 
             timers.playingRuntime.ms = date.getTime() - timers.playingRuntime.original;
