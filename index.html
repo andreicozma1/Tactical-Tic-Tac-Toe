@@ -17,11 +17,9 @@
             height: 100vh;
         }
 
-
-
         .loader {
             color: #ffffff;
-            font-size: 90px;
+            font-size: 60px;
             text-indent: -9999em;
             overflow: hidden;
             width: 1em;
@@ -104,14 +102,29 @@
             }
         }
     </style>
-
 </head>
 
 <body>
+    <div class="loader" id="loader">Loading...</div>
+    <iframe src="" id="iframe" frameBorder="0"></iframe>
+    <script>
+        window.onload = function() {
+            var iframe = document.getElementById("iframe");
 
-    <div class="loader">Loading...</div>
-
-    <iframe src="https://andreig992.github.io/Tactical-Tic-Tac-Toe/game/game.html" frameBorder="0"></iframe>
+            var isOnline = navigator.onLine;
+            if (isOnline) {
+                iframe.src = "https://andreig992.github.io/Tactical-Tic-Tac-Toe/game/game.html"
+            }
+            else {
+                iframe.src = "game/game.html";
+                alert("No Internet Connection. Certain features may be limited")
+            }
+            iframe.onload = function() {
+                var loader = document.getElementById("loader");
+                loader.style.visibility = "hidden";
+            }
+        }
+    </script>
 </body>
 
 </html>

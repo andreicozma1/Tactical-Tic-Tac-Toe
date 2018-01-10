@@ -129,62 +129,6 @@ function Element() {
     this.show = function() {
 
         var id = this.text + this.x + this.y + this.size;
-        /*
-                        try {
-                            if (mouseX > this.x - this.size / 3 * this.text.length && mouseX < this.x + this.size / 3 * this.text.length && mouseY > this.y - this.size && mouseY < this.y) {
-                                this.onHover();
-                                isHovering = true;
-                            }
-                        }
-                        catch (e) {}
-
-                        if (alreadyRendered.indexOf(id) == -1 || !this.static) {
-                            if (this.static == false && game.singleRendering) {
-                                ctx.clearRect(this.x - ((this.textAlign == "center") ? ((this.size / 1.5 * this.text.length) / 2) : 0), this.y - this.size * .75, this.size / 1.5 * this.text.length, this.size * .75)
-                            }
-
-                            if (isHovering && this.onClick.toString().length > 20 && !game.singleRendering) {
-                                ctx.fillStyle = this.highlightColor;
-                            }
-                            else {
-                                ctx.fillStyle = (this.color != "") ? this.color : "#000000";
-                            }
-
-                            ctx.textAlign = this.textAlign;
-
-                            ctx.font = (this.italic ? "italic " : "") + (this.bold ? "bold " : (this.weight + " ")) + this.size + "px " + this.font;
-
-                            if (this.angle != 0) {
-                                ctx.save();
-                                ctx.translate(c.width / 2, c.height / 2);
-                                ctx.rotate(this.angle) //+ timers.playingRuntime.ms / 1000);
-                                ctx.translate(-c.width / 2, -c.height / 2);
-                            }
-
-                            ctx.fillText(this.text, this.x, this.y);
-
-                            if (this.angle != 0) {
-                                ctx.restore();
-                            }
-
-
-                            if (game.singleRendering && this.static) {
-                                alreadyRendered.push(id);
-                                elements.push(this);
-                                //console.log(alreadyRendered);
-                            }
-                            if (!game.singleRendering) {
-                                elements.push(this);
-                            }
-
-                        }
-                */
-
-        ////////////////////////////
-
-        /////////////////////////////////////////
-
-        // TODO FIX HITBOX HOVER
 
         ctx.font = (this.italic ? "italic " : "") + (this.bold ? "bold " : (this.weight + " ")) + this.size + "px " + this.font;
         var textWidth = ctx.measureText(this.text).width;
@@ -324,6 +268,11 @@ function setup() {
 
     timers.playingRuntime.original = date.getTime();
 
+
+    if (!navigator.onLine) {
+        game.singleplayer = true;
+    }
+
     setInterval(cleanupDatabase, game.cleanupDatabaseTime);
 
     if (!game.singleplayer && (game.placeAnywhere != 0 || game.singleMarker)) {
@@ -427,7 +376,6 @@ function gameLoop() {
             }
             newBtn.show();
 
-
             var optionsBtn = new Element();
             optionsBtn.text = "OPTIONS";
             optionsBtn.y = c.height - 30;
@@ -440,9 +388,14 @@ function gameLoop() {
             joinBtn.text = "JOIN";
             joinBtn.y = c.height / 2 + textSize;
             joinBtn.onClick = function() {
-                switchScreen(game.screens.join);
-                searchForLobbies();
-                lobbySearchInterval = setInterval(searchForLobbies, 1000);
+                if (navigator.onLine) {
+                    switchScreen(game.screens.join);
+                    searchForLobbies();
+                    lobbySearchInterval = setInterval(searchForLobbies, 1000);
+                }
+                else {
+                    alert("No Internet Connection. Cannot search for online lobbies")
+                }
             }
             joinBtn.show();
 
@@ -585,11 +538,14 @@ function gameLoop() {
             singleplayerOption.text = "Singleplayer: " + (game.singleplayer ? "ON" : "OFF");
             singleplayerOption.y = c.height / 2 - textSize;
             singleplayerOption.size = textSize * .8
+            singleplayerOption.color = navigator.onLine ? "" : "red";
             singleplayerOption.onClick = function() {
                 if (game.singleplayer) {
-                    game.singleplayer = false;
-                    game.placeAnywhere = false;
-                    game.singleMarker = 0;
+                    if (navigator.onLine) {
+                        game.singleplayer = false;
+                        game.placeAnywhere = false;
+                        game.singleMarker = 0;
+                    }
                 }
                 else {
                     game.singleplayer = true;
@@ -713,7 +669,7 @@ function gameLoop() {
                         smallHighlighter[1] = bigBox.boxCoords.y[i];
                     }
                 }
-                draw.rectangle(smallHighlighter[0], smallHighlighter[1], bigBox.smallBoxLength, bigBox.smallBoxLength, bigBox.linethiccness / (gameBoard.fractals + 1), false, gameBoard.isXTurn ? game.Xcolor : game.Ocolor)
+                draw.rectangle(smallHighlighter[0], smallHighlighter[1], bigBox.smallBoxLength, bigBox.smallBoxLength, bigBox.linethiccness / (3 * (gameBoard.fractals - 1)), false, gameBoard.isXTurn ? game.Xcolor : game.Ocolor)
             }
 
 
@@ -749,7 +705,7 @@ function gameLoop() {
 
             draw.outline(gameBoard.isPaused ? (game.singleRendering ? "lightgray" : "black") : "black");
 
-            draw.rectangle(bigBox.boxCoords.x[gameBoard.highlighter[0] * 3] - bigBox.linethiccness / 3, bigBox.boxCoords.y[gameBoard.highlighter[1] * 3] - bigBox.linethiccness / 3, bigBox.sidelength / 3 - bigBox.linethiccness / 1.5, bigBox.sidelength / 3 - bigBox.linethiccness / 1.5, bigBox.linethiccness / 3, bigBox.linethiccness / 3, true);
+            draw.rectangle(bigBox.boxCoords.x[gameBoard.highlighter[0]], bigBox.boxCoords.y[gameBoard.highlighter[1]], bigBox.smallBoxLength * 3 + 2 * (bigBox.linethiccness / (3 * gameBoard.fractals)), bigBox.smallBoxLength * 3 + 2 * (bigBox.linethiccness / (3 * gameBoard.fractals)), bigBox.linethiccness / (3 * (gameBoard.fractals - 1)), true);
 
             draw.hud();
 
@@ -1132,18 +1088,25 @@ function onClick(evt = 0) {
 
 
             var condensedMarker = condenseMarker(newMarker);
-
-
-            if (!alreadyExists && !game.placeAnywhere && gameBoard.fractals == 2) {
-                if (condensedMarker.xOffset === gameBoard.lastMove[0] && condensedMarker.yOffset === gameBoard.lastMove[1] || gameBoard.lastMove == 0) {
-                    gameBoard.lastMove = [condensedMarker.x, condensedMarker.y];
-                    gameBoard.highlighter = [gameBoard.lastMove[0], gameBoard.lastMove[1]];
+            var offsetCondensed = condenseMarker([condensedMarker.xOffset, condensedMarker.yOffset]);
+            console.log(condensedMarker);
+            console.log(offsetCondensed);
+            var condensedLastMarker = condenseMarker(gameBoard.lastMove);
+            console.log(condensedLastMarker);
+            var offsetLastMarkerCondensed = condenseMarker([condensedLastMarker.xOffset, condensedLastMarker.yOffset]);
+            console.log(offsetLastMarkerCondensed);
+            if (!alreadyExists && !game.placeAnywhere && gameBoard.fractals > 1) {
+                if ((condensedLastMarker.x === condensedMarker.xOffset && condensedLastMarker.y === condensedMarker.yOffset && gameBoard.fractals == 2) || (offsetLastMarkerCondensed.xOffset == offsetCondensed.xOffset && offsetLastMarkerCondensed.yOffset == offsetCondensed.yOffset && offsetCondensed.x == condensedLastMarker.x && offsetCondensed.y == condensedLastMarker.y) || gameBoard.lastMove == 0) {
+                    //gameBoard.lastMove = [condensedMarker.x, condensedMarker.y];
+                    gameBoard.lastMove = [newMarker[0], newMarker[1]];
+                    gameBoard.highlighter = [condensedMarker.x * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.xOffset) : 0), condensedMarker.y * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.yOffset) : 0)];
                     timers.highlightRuntime.original = date.getTime();
                 }
                 else {
                     alreadyExists = true;
                 }
             }
+
 
             if (gameBoard.isXTurn) { //  means IF gameBoard.isXTurn === true
                 if (!alreadyExists && bigBox.boxCoords.x[newMarker[0]] != 0 && bigBox.boxCoords.y[newMarker[1]] != 0) {
@@ -1159,6 +1122,7 @@ function onClick(evt = 0) {
                     }
                 }
             }
+
 
             writeDb(gameBoard.Xes, "game/games/" + gameBoard.number + "/board/Xes");
             writeDb(gameBoard.Os, "game/games/" + gameBoard.number + "/board/Os");
@@ -1187,7 +1151,10 @@ function onClick(evt = 0) {
                 }
             }
 
-            writeDb(gameBoard.highlighter, "game/games/" + gameBoard.number + "/board/highlighter");
+            if (gameBoard.fractals > 1) {
+                writeDb(gameBoard.highlighter, "game/games/" + gameBoard.number + "/board/highlighter");
+            }
+
             writeDb(gameBoard.lastMove, "game/games/" + gameBoard.number + "/board/lastMove");
 
             if (game.singleMarker != 0 && !alreadyExists) {
@@ -1209,13 +1176,13 @@ function onClick(evt = 0) {
 }
 
 function condenseMarker(originalMarker) {
-    var condensedMarker = {
+    var condensed = {
         x: originalMarker[0] % 3,
         y: originalMarker[1] % 3,
         xOffset: Math.floor(originalMarker[0] / 3),
         yOffset: Math.floor(originalMarker[1] / 3)
     }
-    return condensedMarker;
+    return condensed;
 }
 
 function checkBlocksWon(marker) {
@@ -1431,12 +1398,12 @@ function setupSync() {
         database.db = database.main.ref("game/games/" + gameBoard.number + "/board/Os");
         database.db.on('value', function(snapshot) {
             if (game.currentScreen == game.screens.game) {
-                if (game.currentScreen == game.screens.game) {
-                    if (snapshot.val() != null & gameBoard.Os != snapshot.val()) {
-                        gameBoard.Os = snapshot.val();
-                        timers.highlightRuntime.original = date.getTime();
-                    }
+
+                if (snapshot.val() != null & gameBoard.Os != snapshot.val()) {
+                    gameBoard.Os = snapshot.val();
+                    timers.highlightRuntime.original = date.getTime();
                 }
+
             }
         });
 
@@ -1444,63 +1411,63 @@ function setupSync() {
         database.db1.on('value', function(snapshot) {
             if (game.currentScreen == game.screens.game) {
 
-                if (game.currentScreen == game.screens.game) {
-
-                    if (snapshot.val() != null && gameBoard.Xes != snapshot.val()) {
-                        gameBoard.Xes = snapshot.val();
-                        timers.highlightRuntime.original = date.getTime();
-                    }
+                if (snapshot.val() != null && gameBoard.Xes != snapshot.val()) {
+                    gameBoard.Xes = snapshot.val();
+                    timers.highlightRuntime.original = date.getTime();
                 }
+
             }
         });
 
         database.db3 = database.main.ref("game/games/" + gameBoard.number + "/board/highlighter");
+
         database.db3.on('value', function(snapshot) {
             if (game.currentScreen == game.screens.game) {
-                if (game.currentScreen == game.screens.game) {
 
-                    if (snapshot.val() != null && gameBoard.highlighter != snapshot.val()) {
-                        gameBoard.highlighter = snapshot.val();
-                    }
+
+                if (snapshot.val() != null && gameBoard.highlighter != snapshot.val()) {
+                    gameBoard.highlighter = snapshot.val();
                 }
+
             }
         });
+
 
         database.db4 = database.main.ref("game/games/" + gameBoard.number + "/board/isXturn");
         database.db4.on('value', function(snapshot) {
             if (game.currentScreen == game.screens.game) {
-                if (game.currentScreen == game.screens.game) {
 
-                    if (snapshot.val() != null && gameBoard.isXTurn != snapshot.val()) {
-                        gameBoard.isXTurn = snapshot.val();
-                    }
-                    refresh();
+                console.log("hereeeee");
+                if (snapshot.val() != null && gameBoard.isXTurn != snapshot.val()) {
+                    gameBoard.isXTurn = snapshot.val();
                 }
+                refresh();
+
             }
         });
 
         database.db5 = database.main.ref("game/games/" + gameBoard.number + "/board/lastMove");
         database.db5.on('value', function(snapshot) {
             if (game.currentScreen == game.screens.game) {
-                if (game.currentScreen == game.screens.game) {
 
-                    if (snapshot.val() != null && gameBoard.lastMove != snapshot.val()) {
-                        gameBoard.lastMove = snapshot.val();
-                        console.log(gameBoard.lastMove)
-                    }
+
+                if (snapshot.val() != null && gameBoard.lastMove != snapshot.val()) {
+                    gameBoard.lastMove = snapshot.val();
+                    console.log(gameBoard.lastMove)
                 }
+
             }
         });
 
         database.db6 = database.main.ref("game/count/" + gameBoard.number + "/2");
         database.db6.on('value', function(snapshot) {
             if (game.currentScreen == game.screens.game) {
-                if (game.currentScreen == game.screens.game) {
-                    if (snapshot.val() != null && gameBoard.fractals != snapshot.val()) {
-                        gameBoard.fractals = snapshot.val();
-                        onResize();
-                    }
+
+                if (snapshot.val() != null && gameBoard.fractals != snapshot.val()) {
+                    gameBoard.fractals = snapshot.val();
+                    onResize();
                 }
+
             }
         });
     }
@@ -1616,7 +1583,6 @@ function resetBoard() {
 function startAction() {
     onResize();
     if (game.singleplayer) {
-
         gameBoard.number = "SP"
         gameBoard.isPaused = false;
         console.log("startAction: Starting game " + gameBoard.number)
@@ -1634,7 +1600,7 @@ function startAction() {
         }
         switchScreen(game.screens.game);
     }
-    else {
+    else if (navigator.onLine) {
 
         try {
             unsyncDb();
@@ -1664,6 +1630,9 @@ function startAction() {
 
             //updateDb();
         });
+    }
+    else {
+        alert("No Internet Connection. Switch to Single Player mode")
     }
 }
 
