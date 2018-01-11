@@ -368,7 +368,7 @@ function gameLoop() {
 
             if (!navigator.onLine) {
                 var statusText = new Element();
-                statusText.text = location.hostname;
+                statusText.text = "OFFLINE";
                 statusText.size = textSize * .8
                 statusText.y = 30 + textSize * 4.5;
                 statusText.show();
