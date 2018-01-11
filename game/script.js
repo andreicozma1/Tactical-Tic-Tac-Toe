@@ -270,7 +270,6 @@ function setup() {
 
     timers.playingRuntime.original = date.getTime();
 
-
     if (!navigator.onLine) {
         game.singleplayer = true;
     }
@@ -369,7 +368,7 @@ function gameLoop() {
 
             if (!navigator.onLine) {
                 var statusText = new Element();
-                statusText.text = "OFFLINE";
+                statusText.text = location.hostname;
                 statusText.size = textSize * .8
                 statusText.y = 30 + textSize * 4.5;
                 statusText.show();
