@@ -381,7 +381,7 @@ function gameLoop() {
             }
 
             var newBtn = new Element();
-            newBtn.text = "NEW";
+            newBtn.text = "NEWA";
             newBtn.y = c.height / 2 - textSize / 2
             newBtn.size = textSize * 1.5
             newBtn.bold = true;
