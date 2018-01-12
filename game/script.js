@@ -17,6 +17,9 @@ c.width = window.innerWidth; // SETS THE CANVAS WIDTH TO THE INNER WIDTH OF THE 
 c.height = window.innerHeight; // SETS THE CANVAS HEIGHT TO THE INNER HEIGHT OF THE WINDOW
 var ctx = c.getContext("2d"); // THE CONTEXT OF THE CANVAS IS WHAT WE'LL USE TO DRAW SHAPES
 
+var viewport = document.getElementById("viewport");
+var viewportScale = 2;
+
 var noNetMsg = "No Internet Connection.\nCertain features may be limited.";
 
 var date = new Date();
@@ -175,7 +178,7 @@ function Element() {
                 ctx.translate(-c.width / 2, -c.height / 2);
             }
             if (game.debug) {
-                draw.rectangle(this.x - ((this.textAlign == "center") ? ((textWidth) / 2) : ((this.textAlign == "right") ? ((this.size / 1.5 * this.text.length)) : 0)), this.y - this.size * .75, longestStr.width, (texts.length > 1) ? ((this.size) * texts.length) : (this.size * .8), 1, false, "red");
+                draw.rectangle(this.x - ((this.textAlign == "center") ? ((textWidth) / 2) : ((this.textAlign == "right") ? ((this.size / 1.5 * this.text.length)) : 0)), this.y - this.size * .75, longestStr.width, (texts.length > 1) ? ((this.size) * texts.length) : (this.size * .8), 1, false, game.Xcolor);
             }
 
             for (var i = 0; i < texts.length; i++) {
@@ -234,6 +237,7 @@ function setup() {
         event.preventDefault();
     }, false);
     document.body.addEventListener('touchstart', function(event) {
+        event.preventDefault();
         isTouch = true;
         mouseX = event.touches[0].pageX;
         mouseY = event.touches[0].pageY;
@@ -264,6 +268,8 @@ function setup() {
     onResize(); // called once in the beginning to set all the dimensions right
 
     switchScreen(game.screens.start);
+
+    setViewportScale();
 
     window.requestAnimationFrame(gameLoop);
     //setTimeout(gameLoop, 1000 / game.targetFPS) // starts the game loop. Repeats the function "gameLoop"
@@ -525,7 +531,7 @@ function gameLoop() {
             reduceMotionOption.text = "Reduce Motion: " + ((game.reduceMotion) ? "ON" : "OFF");
             reduceMotionOption.size = textSize * .8
             reduceMotionOption.y = c.height / 2 - textSize * 3;
-            reduceMotionOption.color = ((game.singleRendering) ? "red" : "")
+            reduceMotionOption.color = ((game.singleRendering) ? game.Xcolor : "")
             reduceMotionOption.onClick = function() {
                 game.reduceMotion = !game.reduceMotion
             }
@@ -535,18 +541,34 @@ function gameLoop() {
             gradientOption.text = "Gradient: " + ((game.gradient) ? "ON" : "OFF");
             gradientOption.size = textSize * .8
             gradientOption.y = c.height / 2 - textSize * 2
-            gradientOption.color = ((game.singleRendering) ? "red" : "")
+            gradientOption.color = ((game.singleRendering) ? game.Xcolor : "")
             gradientOption.onClick = function() {
                 game.gradient = !game.gradient
             }
             gradientOption.show();
+
+            var viewportScaleOption = new Element();
+            viewportScaleOption.text = "Resolution: " + (1 - viewportScale / 5).toFixed(1);
+            viewportScaleOption.size = textSize * .8
+            viewportScaleOption.onClick = function() {
+                viewportScale = viewportScale - .5;
+
+                if (viewportScale < 0) {
+                    viewportScale = 5;
+                }
+                setViewportScale();
+
+            }
+
+            viewportScaleOption.y = c.height / 2 - textSize * 5;
+            viewportScaleOption.show();
 
 
             var singleplayerOption = new Element();
             singleplayerOption.text = "Singleplayer: " + (game.singleplayer ? "ON" : "OFF");
             singleplayerOption.y = c.height / 2 - textSize;
             singleplayerOption.size = textSize * .8
-            singleplayerOption.color = navigator.onLine ? "" : "red";
+            singleplayerOption.color = navigator.onLine ? "" : game.Xcolor;
             singleplayerOption.onClick = function() {
                 if (game.singleplayer) {
                     if (navigator.onLine) {
@@ -589,7 +611,7 @@ function gameLoop() {
                     singleMarkerBtn.text = "Single Marker: OFF";
                     break;
                 case 1:
-                    singleMarkerBtn.text = "Single Marker: RED";
+                    singleMarkerBtn.text = "Single Marker: game.Xcolor";
                     break;
                 case 2:
                     singleMarkerBtn.text = "Single Marker: BLUE"
@@ -722,7 +744,7 @@ function gameLoop() {
             if (game.debug) {
                 for (var i = 0; i < bigBox.boxCoords.x.length; i++) {
                     for (var j = 0; j < bigBox.boxCoords.y.length; j++) {
-                        draw.rectangle(bigBox.boxCoords.x[i], bigBox.boxCoords.y[j], 1, 1, 2, false, "red");
+                        draw.rectangle(bigBox.boxCoords.x[i], bigBox.boxCoords.y[j], 1, 1, 2, false, game.Xcolor);
                     }
                 }
             }
@@ -752,7 +774,7 @@ function gameLoop() {
         debugTxt.textAlign = "left"
         debugTxt.y = 5 + debugTxt.size;
         debugTxt.x = 5;
-        debugTxt.color = "red"
+        debugTxt.color = game.Xcolor
         debugTxt.static = false;
         debugTxt.text = "FPS:" + game.actualFPS + " || avg: " + Math.round(sum / avgFps.length) + " || " + "Pointer: (" + Math.round(mouseX) + ", " + Math.round(mouseY) + ")" + " || " + "isTouch: " + isTouch + "\n" + "player: " + gameBoard.player + " || " + "isXturn: " + gameBoard.isXTurn + " || " + "pendingReset: " + gameBoard.pendingReset + "\n" + "isPaused: " + gameBoard.isPaused + " || " + "style: " + game.style;
         debugTxt.show();
@@ -767,6 +789,11 @@ function gameLoop() {
     else {
         setTimeout(gameLoop, 1000 / game.targetFPS);
     }
+}
+
+function setViewportScale() {
+    viewport.setAttribute("content", "width=device-width, initial-scale=" + (.5 + ((viewportScale === 0) ? 0 : (viewportScale / 5))) + " user-scalable=no");
+    console.log(.5 + ((viewportScale === 0) ? 0 : (viewportScale / 5)))
 }
 
 draw.all = function(color = "black") {
@@ -832,12 +859,6 @@ draw.hud = function() {
         }
         menuBtn.show();
 
-        if (gameBoard.pendingReset) {
-            ctx.fillStyle = "#f80713"
-        }
-        else {
-            ctx.fillStyle = "black"
-        }
 
         if (gameBoard.isPaused) {
 
@@ -887,6 +908,7 @@ draw.hud = function() {
             var resetBtn = new Element();
             resetBtn.text = "RESET";
             resetBtn.y = textSize / 2 + 30;
+            resetBtn.color = gameBoard.pendingReset ? game.Xcolor : "";
             resetBtn.onClick = function() {
                 resetAction();
                 gameBoard.isPaused = false;
@@ -895,6 +917,11 @@ draw.hud = function() {
 
             var gameNumberTxt = new Element();
             gameNumberTxt.y = (c.width / c.height > .8) ? (textSize / 2 + 30) : (textSize * 1.5 + 30)
+            if (c.width / c.height > .8) {
+                gameNumberTxt.textAlign = "left";
+                gameNumberTxt.x = 30
+            }
+
             gameNumberTxt.text = "#" + gameBoard.number;
             gameNumberTxt.bold = true;
             gameNumberTxt.show();
