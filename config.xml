@@ -18,5 +18,6 @@
     <preference name="keepRunning" value="true" />
     <preference name="loadingDialog" value="Loading...,Please wait" />
     <plugin name="cordova-plugin-whitelist" />
+    <plugin spec="https://github.com/moderna/cordova-plugin-cache.git" />
     <icon src="icon.png" />
 </widget>
