@@ -792,7 +792,8 @@ function gameLoop() {
 }
 
 function setViewportScale() {
-    viewport.setAttribute("content", "width=device-width, initial-scale=" + (.5 + ((viewportScale === 0) ? 0 : (viewportScale / 5))) + " user-scalable=no");
+    viewport.setAttribute("content", "width=device-width, initial-scale=1,user-scalable=no");
+    //" + (.5 + ((viewportScale === 0) ? 0 : (viewportScale / 5))) + "
     console.log(.5 + ((viewportScale === 0) ? 0 : (viewportScale / 5)))
 }
 
