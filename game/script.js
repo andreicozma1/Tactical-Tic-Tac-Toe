@@ -701,7 +701,7 @@ function gameLoop() {
                         smallHighlighter[1] = bigBox.boxCoords.y[i];
                     }
                 }
-                draw.rectangle(smallHighlighter[0], smallHighlighter[1], bigBox.smallBoxLength, bigBox.smallBoxLength, bigBox.linethiccness / (3 * (gameBoard.fractals - 1)), false, gameBoard.player == "x" ? game.Xcolor : game.Ocolor)
+                draw.rectangle(smallHighlighter[0], smallHighlighter[1], bigBox.smallBoxLength, bigBox.smallBoxLength, bigBox.linethiccness / (3 * (gameBoard.fractals - 1)), false, gameBoard.player == "X" ? game.Xcolor : game.Ocolor)
             }
 
 
@@ -1231,60 +1231,60 @@ function condenseMarker(originalMarker) {
 
 function checkBlocksWon(marker) {
 
-    var condensedMarker = condenseMarker(marker);
+    var condensedMarker1 = condenseMarker(marker);
     var wonMarker = [];
     var middleMarker = [1, 1];
-    if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker.xOffset, middleMarker[1] + 3 * condensedMarker.yOffset]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker.xOffset + 1, middleMarker[1] + 3 * condensedMarker.yOffset - 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker.xOffset - 1, middleMarker[1] + 3 * condensedMarker.yOffset + 1]) != -1) {
+    if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker1.xOffset, middleMarker[1] + 3 * condensedMarker1.yOffset]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker1.xOffset + 1, middleMarker[1] + 3 * condensedMarker1.yOffset - 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker1.xOffset - 1, middleMarker[1] + 3 * condensedMarker1.yOffset + 1]) != -1) {
         console.log("/");
-        wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+        wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
         //output.push(wonMarker);
     }
-    if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker.xOffset, middleMarker[1] + 3 * condensedMarker.yOffset]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker.xOffset - 1, middleMarker[1] + 3 * condensedMarker.yOffset - 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker.xOffset + 1, middleMarker[1] + 3 * condensedMarker.yOffset + 1]) != -1) {
+    if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker1.xOffset, middleMarker[1] + 3 * condensedMarker1.yOffset]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker1.xOffset - 1, middleMarker[1] + 3 * condensedMarker1.yOffset - 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [middleMarker[0] + 3 * condensedMarker1.xOffset + 1, middleMarker[1] + 3 * condensedMarker1.yOffset + 1]) != -1) {
         console.log("\\");
-        wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+        wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
         //output.push(wonMarker);
     }
 
-    if (condensedMarker.x == 0) {
+    if (condensedMarker1.x == 0) {
         if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0] + 1, marker[1]]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0] + 2, marker[1]]) != -1) {
             console.log("-");
-            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
             //output.push(wonMarker);
         }
     }
-    if (condensedMarker.x == 2) {
+    if (condensedMarker1.x == 2) {
         if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0] - 1, marker[1]]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0] - 2, marker[1]]) != -1) {
             console.log("-");
-            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
             //output.push(wonMarker);
         }
     }
 
-    if (condensedMarker.y == 0) {
+    if (condensedMarker1.y == 0) {
         if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0], marker[1] + 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0], marker[1] + 2]) != -1) {
             console.log("|");
-            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
             //output.push(wonMarker);
         }
     }
-    if (condensedMarker.y == 2) {
+    if (condensedMarker1.y == 2) {
         if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0], marker[1] - 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0], marker[1] - 2]) != -1) {
             console.log("|");
-            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
             //output.push(wonMarker);
         }
     }
-    if (condensedMarker.x == 1) {
+    if (condensedMarker1.x == 1) {
         if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0] - 1, marker[1]]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0] + 1, marker[1]]) != -1) {
             console.log("-");
-            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
             //output.push(wonMarker);
         }
     }
-    if (condensedMarker.y == 1) {
+    if (condensedMarker1.y == 1) {
         if (indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0], marker[1] - 1]) != -1 && indexOf(gameBoard.isXTurn ? gameBoard.Os : gameBoard.Xes, [marker[0], marker[1] + 1]) != -1) {
             console.log("|");
-            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker.xOffset, 3 * condensedMarker.yOffset];
+            wonMarker = [gameBoard.isXTurn ? "O" : "X", 3 * condensedMarker1.xOffset, 3 * condensedMarker1.yOffset];
             //output.push(wonMarker);
         }
     }
@@ -1318,7 +1318,10 @@ function onResize(factor = 1) {
     else {
         bigBox.sidelength = c.width / 1.2 // if portrait, make bigBox as wide as the screen
     }
-    gameBoard.highlighter = [condensedMarker.x * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.xOffset) : 0), condensedMarker.y * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.yOffset) : 0)];
+    if (game.currentScreen == game.screens.game) {
+        gameBoard.highlighter = [condensedMarker.x * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.xOffset) : 0), condensedMarker.y * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.yOffset) : 0)];
+
+    }
 
     bigBox.width = bigBox.sidelength; // set the width of the bigBox to equal the length of the side, based on what was set above
     bigBox.height = bigBox.sidelength; // set the height of the bigBox to equal the length of the side, based on what was set above
