@@ -1318,9 +1318,11 @@ function onResize(factor = 1) {
     else {
         bigBox.sidelength = c.width / 1.2 // if portrait, make bigBox as wide as the screen
     }
+    /*
     if (game.currentScreen == game.screens.game) {
         gameBoard.highlighter = [condensedMarker.x * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.xOffset) : 0), condensedMarker.y * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.yOffset) : 0)];
     }
+    */
 
     bigBox.width = bigBox.sidelength; // set the width of the bigBox to equal the length of the side, based on what was set above
     bigBox.height = bigBox.sidelength; // set the height of the bigBox to equal the length of the side, based on what was set above
