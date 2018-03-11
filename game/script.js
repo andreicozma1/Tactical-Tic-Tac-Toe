@@ -701,7 +701,7 @@ function gameLoop() {
                         smallHighlighter[1] = bigBox.boxCoords.y[i];
                     }
                 }
-                draw.rectangle(smallHighlighter[0], smallHighlighter[1], bigBox.smallBoxLength, bigBox.smallBoxLength, bigBox.linethiccness / (3 * (gameBoard.fractals - 1)), false, gameBoard.isXTurn ? game.Xcolor : game.Ocolor)
+                draw.rectangle(smallHighlighter[0], smallHighlighter[1], bigBox.smallBoxLength, bigBox.smallBoxLength, bigBox.linethiccness / (3 * (gameBoard.fractals - 1)), false, gameBoard.player == "x" ? game.Xcolor : game.Ocolor)
             }
 
 
@@ -818,7 +818,7 @@ draw.fractal2 = function(color = "black") {
         for (var i = 0; i < 3; i++) {
             draw.rectangle(bigBox.x + (bigBox.width / (234 / (30.5 + (i * 75)))), bigBox.y + (bigBox.height / (234 / 7.5)), bigBox.width / (234 / 23), bigBox.height / (234 / 219), bigBox.linethiccness / 3, false, color)
             draw.rectangle(bigBox.x + (bigBox.width / (234 / 7.5)), bigBox.y + (bigBox.height / (234 / (30.5 + (i * 75)))), bigBox.width / (234 / 219), bigBox.height / (234 / 23), bigBox.linethiccness / 3, false, color)
-            //^^^   Draws all lines with 1/3rd bigBox.linethiccness using box
+            //^^^ Draws all lines with 1/3rd bigBox.linethiccness using box
         }
     }
 }
@@ -829,7 +829,7 @@ draw.fractal3 = function(color = "black") {
             for (var j = 0; j < 3; j++) {
                 draw.rectangle(bigBox.x + (bigBox.width / (234 / (15.5 + (i * 75) + (j * 23)))), bigBox.y + (bigBox.height / (234 / 8.5)), bigBox.width / (234 / 7), bigBox.height / (234 / 217), bigBox.linethiccness / 9, false, color)
                 draw.rectangle(bigBox.x + (bigBox.width / (234 / 8.5)), bigBox.y + (bigBox.height / (234 / (15.5 + (i * 75) + (j * 23)))), bigBox.width / (234 / 217), bigBox.height / (234 / 7), bigBox.linethiccness / 9, false, color)
-                //^^^   Draws all lines with 1/9th bigBox.linethiccness using boxes
+                //^^^ Draws all lines with 1/9th bigBox.linethiccness using boxes
             }
         }
     }
@@ -1057,6 +1057,12 @@ draw.rectangle = function(x, y, wid, hei, size = bigBox.linethiccness, isHighlig
     }
 }
 
+
+var condensedMarker;
+var offsetCondensed;
+var condensedLastMarker;
+var offsetLastMarkerCondensed;
+
 function onClick(evt = 0) {
     var clickedX = (evt == 0) ? mouseX : evt.clientX; // saves the X coordinate of where you clicked in a variable
     var clickedY = (evt == 0) ? mouseY : evt.clientY; // saves the Y coordinate of where you clicked in a variable
@@ -1125,13 +1131,13 @@ function onClick(evt = 0) {
             // and determining if the newMarker has the same exact coordinates
 
 
-            var condensedMarker = condenseMarker(newMarker);
-            var offsetCondensed = condenseMarker([condensedMarker.xOffset, condensedMarker.yOffset]);
+            condensedMarker = condenseMarker(newMarker);
+            offsetCondensed = condenseMarker([condensedMarker.xOffset, condensedMarker.yOffset]);
             console.log(condensedMarker);
             console.log(offsetCondensed);
-            var condensedLastMarker = condenseMarker(gameBoard.lastMove);
+            condensedLastMarker = condenseMarker(gameBoard.lastMove);
             console.log(condensedLastMarker);
-            var offsetLastMarkerCondensed = condenseMarker([condensedLastMarker.xOffset, condensedLastMarker.yOffset]);
+            offsetLastMarkerCondensed = condenseMarker([condensedLastMarker.xOffset, condensedLastMarker.yOffset]);
             console.log(offsetLastMarkerCondensed);
             if (!alreadyExists && !game.placeAnywhere && gameBoard.fractals > 1) {
                 if ((condensedLastMarker.x === condensedMarker.xOffset && condensedLastMarker.y === condensedMarker.yOffset && gameBoard.fractals == 2) || (offsetLastMarkerCondensed.xOffset == offsetCondensed.xOffset && offsetLastMarkerCondensed.yOffset == offsetCondensed.yOffset && offsetCondensed.x == condensedLastMarker.x && offsetCondensed.y == condensedLastMarker.y) || gameBoard.lastMove == 0) {
@@ -1146,7 +1152,7 @@ function onClick(evt = 0) {
             }
 
 
-            if (gameBoard.isXTurn) { //  means IF gameBoard.isXTurn === true
+            if (gameBoard.isXTurn) { // means IF gameBoard.isXTurn === true
                 if (!alreadyExists && bigBox.boxCoords.x[newMarker[0]] != 0 && bigBox.boxCoords.y[newMarker[1]] != 0) {
                     if (gameBoard.player == "X" || game.singleplayer) {
                         gameBoard.Xes.push(newMarker); // adds the new marker to the gameBoard.Xes array, and will get drawn to screen
@@ -1312,7 +1318,7 @@ function onResize(factor = 1) {
     else {
         bigBox.sidelength = c.width / 1.2 // if portrait, make bigBox as wide as the screen
     }
-    gameBoard.highlighter = [gameBoard.lastMove[0], gameBoard.lastMove[1], bigBox.sidelength / 3 - bigBox.linethiccness / 1.5, bigBox.sidelength / 3 - bigBox.linethiccness / 1.5, true];
+    gameBoard.highlighter = [condensedMarker.x * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.xOffset) : 0), condensedMarker.y * 3 + ((gameBoard.fractals == 3) ? (9 * offsetCondensed.yOffset) : 0)];
 
     bigBox.width = bigBox.sidelength; // set the width of the bigBox to equal the length of the side, based on what was set above
     bigBox.height = bigBox.sidelength; // set the height of the bigBox to equal the length of the side, based on what was set above
@@ -1338,32 +1344,32 @@ function onResize(factor = 1) {
         posY = (bigBox.y + (bigBox.width / (234 / (8.5 + (((i) * (27 * (Math.pow((1 / 3), gameBoard.fractals)))) * 7) + ((Math.floor(((i) * (27 * (Math.pow((1 / 3), gameBoard.fractals)))) / 3)) * 2) + ((Math.floor(((i) * (27 * (Math.pow((1 / 3), gameBoard.fractals)))) / 9)) * 6)))))
 
         /*
-                switch (gameBoard.fractals) {
-                    case 1:
-                        posX = bigBox.x + bigBox.linethiccness + (i) * bigBox.linethiccness + i * ((bigBox.width - (2 * gameBoard.fractals + 2) * bigBox.linethiccness) / blockCount);
-                        posY = bigBox.y + bigBox.linethiccness + (i) * bigBox.linethiccness + i * ((bigBox.width - (2 * gameBoard.fractals + 2) * bigBox.linethiccness) / blockCount);
-                        break;
-                    case 2:
-                        posX = bigBox.x + bigBox.linethiccness + i * (bigBox.linethiccness / 3) - (i % 3) * bigBox.linethiccness / 5 + i * ((bigBox.width - ((blockCount / 3) + 1) * bigBox.linethiccness) / blockCount);
-                        posY = bigBox.y + bigBox.linethiccness + i * (bigBox.linethiccness / 3) - (i % 3) * bigBox.linethiccness / 5 + i * ((bigBox.height - ((blockCount / 3) + 1) * bigBox.linethiccness) / blockCount);
-                        break;
-                    case 3:
-                        break;
-                }
+        switch (gameBoard.fractals) {
+        case 1:
+        posX = bigBox.x + bigBox.linethiccness + (i) * bigBox.linethiccness + i * ((bigBox.width - (2 * gameBoard.fractals + 2) * bigBox.linethiccness) / blockCount);
+        posY = bigBox.y + bigBox.linethiccness + (i) * bigBox.linethiccness + i * ((bigBox.width - (2 * gameBoard.fractals + 2) * bigBox.linethiccness) / blockCount);
+        break;
+        case 2:
+        posX = bigBox.x + bigBox.linethiccness + i * (bigBox.linethiccness / 3) - (i % 3) * bigBox.linethiccness / 5 + i * ((bigBox.width - ((blockCount / 3) + 1) * bigBox.linethiccness) / blockCount);
+        posY = bigBox.y + bigBox.linethiccness + i * (bigBox.linethiccness / 3) - (i % 3) * bigBox.linethiccness / 5 + i * ((bigBox.height - ((blockCount / 3) + 1) * bigBox.linethiccness) / blockCount);
+        break;
+        case 3:
+        break;
+        }
         */
 
         /*
         if (i >= 6) {
-            posX = bigBox.x + i * (bigBox.width - (4 * bigBox.linethiccness)) / (9) + 3 * bigBox.linethiccness;
-            posY = bigBox.y + i * (bigBox.height - (4 * bigBox.linethiccness)) / (9) + 3 * bigBox.linethiccness;
+        posX = bigBox.x + i * (bigBox.width - (4 * bigBox.linethiccness)) / (9) + 3 * bigBox.linethiccness;
+        posY = bigBox.y + i * (bigBox.height - (4 * bigBox.linethiccness)) / (9) + 3 * bigBox.linethiccness;
         }
         else if (i >= 3) {
-            posX = bigBox.x + i * (bigBox.width - (4 * bigBox.linethiccness)) / (9) + 2 * bigBox.linethiccness;
-            posY = bigBox.y + i * (bigBox.height - (4 * bigBox.linethiccness)) / (9) + 2 * bigBox.linethiccness;
+        posX = bigBox.x + i * (bigBox.width - (4 * bigBox.linethiccness)) / (9) + 2 * bigBox.linethiccness;
+        posY = bigBox.y + i * (bigBox.height - (4 * bigBox.linethiccness)) / (9) + 2 * bigBox.linethiccness;
         }
         else {
-            posX = bigBox.x + i * (bigBox.width - (4 * bigBox.linethiccness)) / (9) + bigBox.linethiccness;
-            posY = bigBox.y + i * (bigBox.height - (4 * bigBox.linethiccness)) / (9) + bigBox.linethiccness;
+        posX = bigBox.x + i * (bigBox.width - (4 * bigBox.linethiccness)) / (9) + bigBox.linethiccness;
+        posY = bigBox.y + i * (bigBox.height - (4 * bigBox.linethiccness)) / (9) + bigBox.linethiccness;
         }
         */
         //^^ Calculating posX and posY. The 2 coordinates basically are the top left corner of the box where the marker should be placed
