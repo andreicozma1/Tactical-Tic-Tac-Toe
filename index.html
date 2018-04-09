@@ -10,24 +10,23 @@
             padding: 0;
             overflow: hidden;
             background-color: lightgray;
+            width: 100%;
+            height: 100%;
         }
-
         iframe {
-            position: absolute;
-            top: 0;
             width: 100%;
             height: 100%;
         }
 
         .loader {
-            color: #ffffff;
-            font-size: 60px;
+            color: black;
+            font-size: 10vh;
             text-indent: -9999em;
             overflow: hidden;
             width: 1em;
             height: 1em;
             border-radius: 50%;
-            margin: 45vh auto;
+            margin: 40vh auto;
             position: relative;
             -webkit-transform: translateZ(0);
             -ms-transform: translateZ(0);
@@ -110,34 +109,15 @@
     <div class="loader" id="loader">Loading...</div>
     <iframe src="" id="iframe" frameBorder="0"></iframe>
     <script>
-        document.addEventListener('deviceready', onDeviceReady);
-
-        function onDeviceReady() {
-            var success = function(status) {
-                alert('Message: ' + status);
-            }
-
-            var error = function(status) {
-                alert('Error: ' + status);
-            }
-
-            window.cache.clear(success, error);
-        }
-
         window.onload = function() {
             var iframe = document.getElementById("iframe");
-            var isOnline = navigator.onLine;
-            if (isOnline) {
+
                 iframe.src = "https://andreig992.github.io/Tactical-Tic-Tac-Toe/game/game.html"
-            }
-            else {
-                alert("Current version failed to load.\nPlease try again later.");
-                iframe.src = "game/game.html";
-            }
-            iframe.onload = function() {
-                var loader = document.getElementById("loader");
-                loader.style.visibility = "hidden";
-            }
+
+                iframe.onload = function() {
+                    var loader = document.getElementById("loader");
+                      loader.parentNode.removeChild(loader);
+                }
         }
     </script>
 </body>
